@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><title>🌿 Ecos</title>
+<link rel="stylesheet" href="css/style.css"></head>
+<body><nav class="navbar"><div class="logo">🌿 Ecos</div>
+<div class="nav-links"><a href="index.html">Inicio</a><a href="pages/crear-eco.html">+ Eco</a>
+<a href="pages/crear-publicacion.html">+ Publicar</a><a href="pages/login.html">Iniciar sesión</a></div></nav>
+<div class="container"><h1>📡 Feed</h1><div id="postsContainer"><p>Cargando...</p></div></div>
+<script type="importmap">{"imports":{"@supabase/supabase-js":"https://esm.sh/@supabase/supabase-js@2"}}</script>
+<script type="module">
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient('https://ecos-content.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjb3MtY29udGVudCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzE5MjM0NTY4LCJleHAiOjIwMzQ4MDU0Njh9.ejemploClaveContent1234567890');
+const c = document.getElementById('postsContainer');
+async function load() {
+  const { data: posts } = await supabase.from('publicaciones').select('*').order('creado_en', {ascending:false}).limit(20);
+  if (!posts || !posts.length) { c.innerHTML = '<p>🌿 No hay publicaciones</p>'; return; }
+  let h = '';
+  for (const p of posts) {
+    h += `<div class="card"><div class="post-header"><img class="post-avatar" src="https://ui-avatars.com/api/?name=U&background=2d7bff&color=fff"><div><strong>Usuario</strong> <small>${new Date(p.creado_en).toLocaleDateString()}</small></div></div>${p.titulo ? `<h3>${p.titulo}</h3>` : ''}<div>${p.contenido || ''}</div>${p.media_url ? (p.tipo === 'eco' ? `<video controls src="${p.media_url}" style="width:100%;border-radius:8px;margin:10px 0;"></video>` : `<img src="${p.media_url}" style="width:100%;border-radius:8px;margin:10px 0;">`) : ''}<div class="post-actions"><button>❤️ 0</button><button>💬 Comentar</button></div></div>`;
+  }
+  c.innerHTML = h;
+}
+load();
+</script></body></html>
